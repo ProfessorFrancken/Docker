@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# This file is used to generate coverage in all possible formats
+docker-compose run test_coverage vendor/bin/phpunit \
+                          --coverage-clover build/clover.xml \
+                          --coverage-crap4j build/crap4j.xml \
+                          --coverage-html build/html-coverage/ \
+                          --coverage-php build/php_coverage.php \
+                          --coverage-text=build/test.txt \
+                          --coverage-xml build/xml-coverage/
