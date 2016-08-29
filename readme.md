@@ -20,6 +20,11 @@ Next our application's dependencies need to be installed, run
 ```
 docker-compose run composer install
 ```
+Next run (this will generate a private key that is used for encryption)
+```
+docker-compose run php php artisan key:generate
+```
+
 ## Start the server
 Once the composer dependencies have been installed (this might take a while
 depending on your internet speed) you can start the server by running,
