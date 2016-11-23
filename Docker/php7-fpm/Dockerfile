@@ -19,6 +19,14 @@ RUN apt-get update \
     && docker-php-ext-install mysqli pdo_mysql \
     && rm -rf /var/lib/apt
 
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        libmagickwand-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pecl install imagick-3.4.1 \
+    && docker-php-ext-enable imagick
+
 ADD php.ini /usr/local/etc/php/
 ADD example.pool.conf /etc/php5/fpm/pool.d/
 
