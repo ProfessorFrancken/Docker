@@ -24,6 +24,7 @@ services:
       - php
     volumes:
       - ./Francken/:/var/www/francken
+    restart: always
 
   mysql:
     image: mysql:8.0
@@ -34,6 +35,7 @@ services:
       - MYSQL_PASSWORD=leden
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=francken
+    restart: always
 
   composer:
     image: composer/composer:alpine
