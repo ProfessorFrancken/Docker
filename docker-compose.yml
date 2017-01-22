@@ -43,6 +43,13 @@ services:
       - ./Francken:/var/www/francken
     working_dir: /var/www/francken
 
+  npm:
+    image: node:7.4
+    volumes:
+      - ./Francken/:/var/www/francken
+    working_dir: /var/www/francken
+
+
 # This service is mostly identical to the php service except that it also
 # intalls xdebug so we can check for coverage
   test_coverage:
