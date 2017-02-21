@@ -1,0 +1,124 @@
+* Francken Docker Environment
+
+This repository can be used to setup a development environment that runs on
+Docker.
+
+A shell script =init.sh=  is included which, once you execute it, will setup our
+environment for you which includes setting an =.env= file, installing dependencies
+(both composer and npm), generating css, setting an encryption key and finally
+starting a nginx server so you can start working on the website and see it on
+=localhost=.
+
+Once everything is working you should check the documentation on the main
+repository to find some tips on how to work with our application.
+
+** Requirements
+
+There are 4 requirements that you will need to setup yourself before you can
+start using our shell script to setup your docker environment.
+
+- [[https://git-scm.com/book/en/v2/Getting-Started-Installing-Git][git]]
+- [[https://help.github.com/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent/][ssh key]]
+- [[https://www.docker.com/products/docker#/linux][Docker]]
+- [[https://docs.docker.com/compose/install/][docker-compose]]
+
+*** Gotchas
+
+Once you've installed Docker be sure to add your user to the Docker group and
+logout and login again, otherwise you will get permission errors.
+
+** Manual instructions
+
+The following are instructions on how to setup our environment without using the
+=init.sh= file, which might be useful if you want to know more about each step
+in the =init.sh= file, or if you're on Windows.
+
+First clone this repo to some folder where you'd like to work, i.e.,
+#+BEGIN_SRC sh
+cd Projects
+git clone git@github.com:ProfessorFrancken/Docker.git
+#+END_SRC
+
+Next clone the [[https://github.com/ProfessorFrancken/ProfessorFrancken][ProfessorFrancken/ProfessorFrancken]] repo inside the folder that's
+been cloned and name if Francken (this is because our =docker-compose.yml= file
+assumes the folder's name is "Francken"),
+#+BEGIN_SRC sh
+cd docker
+git clone git@github.com:ProfessorFrancken/ProfessorFrancken.git Francken
+#+END_SRC
+
+Next go to the =francken= directory and copy and rename the =.env.example= file,
+#+BEGIN_SRC sh
+cd Francken
+cp .env.example .env
+#+END_SRC
+
+** Install npm dependencies
+We're using [[https://laravel.com/docs/5.4/mix][Laravel Mix]] to compile [[http://sass-lang.com/][scss]] files to css for this we will have to
+install some npm dependencies,
+
+#+BEGIN_SRC sh
+# Install dependencies
+docker-compose run npm npm install
+
+# Compile our css files
+docker-compose run npm npm run dev
+#+END_SRC
+
+** Install php dependencies
+Next our application's php dependencies need to be installed, run
+#+BEGIN_SRC sh
+docker-compose run composer install
+#+END_SRC
+
+Next generate a private key that is used for encryption,
+#+BEGIN_SRC sh
+docker-compose run php php artisan key:generate
+#+END_SRC
+
+** Start the server
+Once the composer dependencies have been installed (this might take a while
+depending on your internet speed) you can start the server by running,
+#+BEGIN_SRC sh
+docker-compose up -d nginx
+#+END_SRC
+
+Next run =docker-compose run php php artisan:migrate -seed= to migrate the
+database. You should now be able to access the server at =localhost=.
+
+You might get the following error when executing =docker-compose run php php artisan:migrate -seed=,
+#+BEGIN_SRC
+
+  [Illuminate\Database\QueryException]
+  SQLSTATE[HY000] [2002] Connection refused (SQL: select * from information_schema.tables where table_schema = francken and table_name = migrations)
+
+
+
+  [PDOException]
+  SQLSTATE[HY000] [2002] Connection refused
+
+#+END_SRC
+
+This means that the mysql server hasn't finished initializing yet, wait a while
+(≈ 1 minute) and try again.
+
+
+*** Stopping the server
+To stop the server run =docker-compose down=.
+
+** Testing
+The unit and integration tests can be run using,
+#+BEGIN_SRC sh
+docker-compose run php vendor/bin/phpunit
+#+END_SRC
+
+** Testing with coverage
+Use the =test_coverage= container which includes xdebug to add collect coverage
+information.
+
+#+BEGIN_SRC sh
+docker-compose run test_coverage vendor/bin/phpunit
+
+# Or run humbug, a mutation testing tool
+docker-compose run test_coverage vendor/bin/humbug
+#+END_SRC
