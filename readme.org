@@ -83,10 +83,10 @@ depending on your internet speed) you can start the server by running,
 docker-compose up -d nginx
 #+END_SRC
 
-Next run =docker-compose run php php artisan:migrate -seed= to migrate the
+Next run =docker-compose run php php artisan migrate --seed= to migrate the
 database. You should now be able to access the server at =localhost=.
 
-You might get the following error when executing =docker-compose run php php artisan:migrate -seed=,
+You might get the following error when executing =docker-compose run php php artisan migrate --seed=,
 #+BEGIN_SRC
 
   [Illuminate\Database\QueryException]
