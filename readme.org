@@ -40,7 +40,7 @@ git clone git@github.com:ProfessorFrancken/Docker.git
 #+END_SRC
 
 Next clone the [[https://github.com/ProfessorFrancken/ProfessorFrancken][ProfessorFrancken/ProfessorFrancken]] repo inside the folder that's
-been cloned and name if Francken (this is because our =docker-compose.yml= file
+been cloned and name it Francken (this is because our =docker-compose.yml= file
 assumes the folder's name is "Francken"),
 #+BEGIN_SRC sh
 cd docker
