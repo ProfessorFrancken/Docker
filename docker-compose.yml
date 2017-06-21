@@ -4,32 +4,34 @@ services:
   php:
     build:
       dockerfile: Dockerfile
-      context: ./Docker/php7-fpm
+      context: ./Docker/php
       args:
         UID: 1000
+    image: francken/php
     links:
       - mysql
     volumes:
       - ./Francken/:/var/www/francken
-    working_dir: /var/www/francken
 
   nginx:
     build:
       dockerfile: Dockerfile
       context: ./Docker/nginx
+    image: francken/nginx
     ports:
       - 80:80
       - 443:443
     links:
       - php
-    volumes:
-      - ./Francken/:/var/www/francken
+    volumes_from:
+      - php
     restart: always
 
   mysql:
-    image: mysql:8.0
-    volumes:
-      - ./Docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    build:
+      dockerfile: Dockerfile
+      context: ./Docker/mysql
+    image: francken/mysql
     environment:
       - MYSQL_USER=francken
       - MYSQL_PASSWORD=leden
@@ -39,8 +41,8 @@ services:
 
   composer:
     image: composer/composer:alpine
-    volumes:
-      - ./Francken:/var/www/francken
+    volumes_from:
+      - php
     working_dir: /var/www/francken
 
   npm:
@@ -51,8 +53,8 @@ services:
 
   yarn:
     image: kkarczmarczyk/node-yarn
-    volumes:
-      - ./Francken/:/var/www/francken
+    volumes_from:
+      - php
     working_dir: /var/www/francken
     command: yarn
 
@@ -60,13 +62,12 @@ services:
 # intalls xdebug so we can check for coverage
   test_coverage:
     build:
-      dockerfile: Dockerfile
-      context: ./Docker/testing
-    command: vendor/bin/phpunit
-    volumes:
-      - ./Francken:/var/www/francken
+      dockerfile: Dockerfile-testing
+      context: ./Docker/php
+    image: francken/php:with-xdebug
+    volumes_from:
+      - php
     links:
       - mysql
     environment:
       DB_CONNECTION: testing
-    working_dir: /var/www/francken

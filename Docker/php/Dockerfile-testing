@@ -1,0 +1,8 @@
+FROM francken/php
+
+ADD php-testing.ini /usr/local/etc/php/php.ini
+
+RUN pecl install xdebug-2.4.0 \
+    && docker-php-ext-enable xdebug
+
+CMD ["vendor/bin/phpunit", "--coverage-text"]

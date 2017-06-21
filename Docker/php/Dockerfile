@@ -28,11 +28,11 @@ RUN pecl install imagick \
     && docker-php-ext-enable imagick
 
 ADD php.ini /usr/local/etc/php/
+ADD example.pool.conf /etc/php5/fpm/pool.d/
 
 ARG UID=1000
 RUN usermod -u ${UID} www-data
 
-RUN pecl install xdebug-2.4.0 \
-    && docker-php-ext-enable xdebug
+WORKDIR /var/www/francken
 
-CMD ["vendor/bin/phpunit", "--coverage-text"]
+CMD ["php-fpm", "-F"]
