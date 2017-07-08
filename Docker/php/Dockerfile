@@ -16,23 +16,20 @@ RUN apt-get update \
         php7.0-mcrypt \
         php7.0-mysql \
         php7.0-opcache \
+        libmagickwand-dev \
     && docker-php-ext-install mysqli pdo_mysql \
     && rm -rf /var/lib/apt
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        libmagickwand-dev \
-    && rm -rf /var/lib/apt/lists/*
-
 RUN pecl install imagick \
-    && docker-php-ext-enable imagick
+    && docker-php-ext-enable imagick \
+    && rm -rf /var/lib/apt
+
+RUN usermod -u 1000 www-data
+USER www-data
+
+WORKDIR /var/www/francken
 
 ADD php.ini /usr/local/etc/php/
 ADD example.pool.conf /etc/php5/fpm/pool.d/
-
-ARG UID=1000
-RUN usermod -u ${UID} www-data
-
-WORKDIR /var/www/francken
 
 CMD ["php-fpm", "-F"]

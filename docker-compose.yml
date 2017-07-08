@@ -5,8 +5,6 @@ services:
     build:
       dockerfile: Dockerfile
       context: ./Docker/php
-      args:
-        UID: 1000
     image: francken/php
     links:
       - mysql
@@ -47,8 +45,8 @@ services:
 
   npm:
     image: node:7.4
-    volumes:
-      - ./Francken/:/var/www/francken
+    volumes_from:
+      - php
     working_dir: /var/www/francken
 
   yarn:
@@ -64,7 +62,7 @@ services:
     build:
       dockerfile: Dockerfile-testing
       context: ./Docker/php
-    image: francken/php:with-xdebug
+    image: francken/php-with-xdebug
     volumes_from:
       - php
     links:
