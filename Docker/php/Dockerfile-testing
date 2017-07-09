@@ -1,12 +1,8 @@
 FROM francken/php
 
-USER root
-
 ADD php-testing.ini /usr/local/etc/php/php.ini
 
 RUN pecl install xdebug \
     && docker-php-ext-enable xdebug
-
-USER www-data
 
 CMD ["vendor/bin/phpunit", "--coverage-text"]

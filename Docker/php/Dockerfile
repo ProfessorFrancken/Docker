@@ -24,9 +24,6 @@ RUN pecl install imagick \
     && docker-php-ext-enable imagick \
     && rm -rf /var/lib/apt
 
-RUN usermod -u 1000 www-data
-USER www-data
-
 WORKDIR /var/www/francken
 
 ADD php.ini /usr/local/etc/php/
