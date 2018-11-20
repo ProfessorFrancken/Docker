@@ -11,6 +11,24 @@ services:
     volumes:
       - ./Francken/:/var/www/francken
 
+  queue-worker:
+    build:
+      dockerfile: Dockerfile-queue
+      context: ./Docker/php
+    image: francken/queue-worker
+    volumes:
+      - ./Francken/:/var/www/francken
+    restart: always
+
+  scheduler:
+    build:
+      dockerfile: Dockerfile-scheduler
+      context: ./Docker/php
+    image: francken/scheduler
+    volumes:
+      - ./Francken/:/var/www/francken
+    restart: always
+
   nginx:
     build:
       dockerfile: Dockerfile

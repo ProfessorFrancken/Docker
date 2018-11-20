@@ -1,32 +1,64 @@
-FROM php:7.1-fpm
+FROM php:7.2-fpm
 
-RUN apt-get update \
-    && apt-get install -y wget software-properties-common python-software-properties \
-    && echo "deb http://packages.dotdeb.org jessie all" >> /etc/apt/sources.list \
-    && wget https://www.dotdeb.org/dotdeb.gpg \
-    && apt-key add dotdeb.gpg \
-    && apt-get update && apt-get install -y \
-        php7.0-common \
-        php7.0-cli \
-        php7.0-curl \
-        php7.0-gd \
-        php7.0-imagick \
-        php7.0-intl \
-        php7.0-json \
-        php7.0-mcrypt \
-        php7.0-mysql \
-        php7.0-opcache \
-        libmagickwand-dev \
-    && docker-php-ext-install mysqli pdo_mysql \
-    && rm -rf /var/lib/apt
+# https://hub.docker.com/r/pickapp/pa-docker-php-fpm/~/dockerfile/
 
-RUN pecl install imagick \
+RUN apt-get update && apt-get install -y \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libpng-dev \
+    libpq-dev \
+    g++ \
+    libicu-dev \
+    libxml2-dev \
+    libsqlite3-dev \
+    libfreetype6-dev \
+    libjpeg62-turbo-dev \
+    libmcrypt-dev \
+    zlib1g-dev \
+    libmagickwand-dev --no-install-recommends \
+    ghostscript \
+    procps
+
+RUN docker-php-ext-configure intl \
+    && docker-php-ext-install pdo_sqlite \
+    && docker-php-ext-install mbstring \
+    && docker-php-ext-install intl \
+    && docker-php-ext-install zip \
+    && docker-php-ext-install pdo_mysql \
+    && docker-php-ext-install pdo_pgsql \
+    && docker-php-ext-install soap \
+    && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+    && docker-php-ext-install -j$(nproc) gd \
+    && docker-php-ext-install opcache \
+    && docker-php-ext-install mysqli \
+    && docker-php-ext-install bcmath \
+    && docker-php-ext-install pcntl \
+    && pecl install imagick  \
     && docker-php-ext-enable imagick \
-    && rm -rf /var/lib/apt
+    && pecl install apcu \
+    && docker-php-ext-enable apcu
+
+ENV PHPREDIS_VERSION 3.1.6
+
+RUN curl -L -o /tmp/redis.tar.gz https://github.com/phpredis/phpredis/archive/$PHPREDIS_VERSION.tar.gz  \
+    && mkdir /tmp/redis \
+    && tar -xf /tmp/redis.tar.gz -C /tmp/redis \
+    && rm /tmp/redis.tar.gz \
+    && ( \
+    cd /tmp/redis/phpredis-$PHPREDIS_VERSION \
+    && phpize \
+    && ./configure \
+    && make -j$(nproc) \
+    && make install \
+    ) \
+    && rm -r /tmp/redis \
+    && docker-php-ext-enable redis
 
 WORKDIR /var/www/francken
 
 ADD php.ini /usr/local/etc/php/
 ADD example.pool.conf /etc/php5/fpm/pool.d/
+
+#RUN usermod -u 1000 www-data
 
 CMD ["php-fpm", "-F"]
