@@ -2,6 +2,6 @@ FROM francken/php
 
 COPY queue.sh /usr/local/bin/run-queue
 
-RUN chmod u+x /usr/local/bin/run-queue
+# RUN chmod u+x /usr/local/bin/run-queue
 
 CMD ["/usr/local/bin/run-queue"]

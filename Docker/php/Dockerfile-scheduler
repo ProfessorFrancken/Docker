@@ -2,6 +2,6 @@ FROM francken/php
 
 COPY scheduler.sh /usr/local/bin/run-scheduler
 
-RUN chmod u+x /usr/local/bin/run-scheduler
+# RUN chmod u+x /usr/local/bin/run-scheduler
 
 CMD ["/usr/local/bin/run-scheduler"]
