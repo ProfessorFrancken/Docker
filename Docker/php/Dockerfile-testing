@@ -1,9 +1,8 @@
 FROM francken/php
 
-ADD php-testing.ini /usr/local/etc/php/php.ini
+RUN install-php-extensions xdebug pcov
 
-RUN pecl install xdebug \
-    && docker-php-ext-enable xdebug
+ADD php-testing.ini /usr/local/etc/php/php.ini
 
 # Install git so that we can use coveralls
 RUN apt-get update \
